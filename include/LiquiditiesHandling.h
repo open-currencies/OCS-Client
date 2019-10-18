@@ -10,6 +10,8 @@
 #include "Type5Entry.h"
 #include "Type15Entry.h"
 #include "Type5Or15Entry.h"
+#include <FL/Fl.H>
+#include <FL/fl_ask.H>
 
 using namespace std;
 using json = nlohmann::json;

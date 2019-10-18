@@ -18,6 +18,8 @@
 #include "files.h"
 #include "Type1Entry.h"
 #include "CIDsSet.h"
+#include <FL/Fl.H>
+#include <FL/fl_ask.H>
 
 using namespace std;
 using json = nlohmann::json;

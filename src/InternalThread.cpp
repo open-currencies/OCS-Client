@@ -1,11 +1,13 @@
 #include "InternalThread.h"
 
-#define routineSleepTime 1
+#define routineSleepTimeInSec 1
 #define collectInfoFreq 8
 #define claimsInfoFreq 25
 #define idsInfoFreq 45
 #define contactsRqstFreq 55
 #define heartBeatFreq 15
+#define keyRegistrationFreq 5
+#define liquiRegistrationFreq 5
 
 InternalThread::InternalThread(ConnectionHandling *c): connection(c), log(nullptr),
     collectInfoCount(0), claimsInfoCount(0), idsInfoCount(0), contactsRqstCount(0), heartBeatCount(0)
@@ -58,9 +60,11 @@ void* InternalThread::routine(void *internalThread)
     internal->logInfo("InternalThread::routine started");
     internal->heartBeatCount = heartBeatFreq;
     internal->contactsRqstCount = contactsRqstFreq/5*4;
+    internal->keyRegistrationCount = keyRegistrationFreq;
+    internal->liquiRegistrationCount = liquiRegistrationFreq;
     do
     {
-        internal->condSleep(routineSleepTime);
+        internal->condSleep(routineSleepTimeInSec);
 
         if (!internal->running || internal->connection->getNotaryNr()<1
                 || !internal->connection->connectionEstablished())
@@ -76,8 +80,9 @@ void* InternalThread::routine(void *internalThread)
 
         // register new keys if necessary
         string keyName = keys->getLocalPrvtKeyUnreg();
-        if (keyName.length()>0)
+        if (keyName.length()>0 && internal->keyRegistrationCount >= keyRegistrationFreq)
         {
+            internal->keyRegistrationCount = 0;
             internal->logInfo("InternalThread::routine: registering new key..");
             internal->logInfo(keyName.c_str());
             CryptoPP::RSA::PrivateKey* privateKey = keys->getPrivateKey(keyName);
@@ -92,6 +97,7 @@ void* InternalThread::routine(void *internalThread)
                 }
             }
         }
+        else if (keyName.length()>0) internal->keyRegistrationCount++;
 
         // request key info if necessary
         keyName = keys->getLocalPblcKeyUnreg();
@@ -112,8 +118,9 @@ void* InternalThread::routine(void *internalThread)
 
         // register new liqui if necessary and/or request id
         string liquiName = lh->getLiquiUnreg();
-        if (liquiName.length()>0)
+        if (liquiName.length()>0 && internal->liquiRegistrationCount >= liquiRegistrationFreq)
         {
+            internal->liquiRegistrationCount = 0;
             Type5Or15Entry* entry = lh->getLiqui(liquiName);
             if (entry != nullptr)
             {
@@ -142,6 +149,7 @@ void* InternalThread::routine(void *internalThread)
                 }
             }
         }
+        else if (liquiName.length()>0) internal->liquiRegistrationCount++;
 
         // request heart beat
         if (internal->heartBeatCount >= heartBeatFreq)

@@ -80,8 +80,17 @@ void LiquiditiesHandling::loadIDsFromFile(bool fromDownload)
         return;
     }
     json j;
-    fJ >> j;
-    fJ.close();
+    try
+    {
+        fJ >> j;
+        fJ.close();
+    }
+    catch (const exception& e)
+    {
+        fJ.close();
+        liquis_mutex.unlock();
+        return;
+    }
 
     // read data from liquisIDs
     for (json::iterator it = j.begin(); it != j.end(); ++it)
@@ -200,8 +209,16 @@ bool LiquiditiesHandling::setId(string name, CompleteID id)
     }
     liquisIDs.insert(pair<string, CompleteID>(name, id));
     liquisNamesById.insert(pair<CompleteID, string>(id, name));
+    size_t oldUnregSize = liquisUnreg.size();
     liquisUnreg.remove(name);
+    size_t newUnregSize = liquisUnreg.size();
     liquis_mutex.unlock();
+    if (newUnregSize < oldUnregSize)
+    {
+        Fl::lock();
+        fl_alert("Liquidity \"%s\" was successfully registered.\nPlease verify its details under \"Show liquidity info\".", name.c_str());
+        Fl::unlock();
+    }
     saveIDs();
     return true;
 }

@@ -36,6 +36,8 @@ private:
     volatile unsigned int idsInfoCount;
     volatile unsigned int contactsRqstCount;
     volatile unsigned int heartBeatCount;
+    volatile unsigned int keyRegistrationCount;
+    volatile unsigned int liquiRegistrationCount;
 
     // of continuous interest
     mutex ofinterest_mutex;

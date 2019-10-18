@@ -55,8 +55,8 @@ Logger *logger;
 int main (int argc, char ** argv)
 {
     // build logger or set to nullptr
-    logger = new Logger();
-    //logger = nullptr;
+    //logger = new Logger();
+    logger = nullptr;
 
     // build window
     Fl::scheme("gleam");
@@ -128,6 +128,7 @@ int main (int argc, char ** argv)
 
     w->callback(win_cb);
     w->end();
+    Fl::lock();
     w->show(argc, argv);
 
     // NOTE: comment in for mingw:

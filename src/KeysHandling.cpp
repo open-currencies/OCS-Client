@@ -276,9 +276,17 @@ bool KeysHandling::setId(string name, CompleteID id)
     localPublicKeysIDs.insert(pair<string, CompleteID>(name, id));
     localPublicKeysNamesByID.insert(pair<CompleteID, string>(id, name));
     localPblcKeysUnreg.remove(name);
+    size_t oldUnregSize = localPrvtKeysUnreg.size();
     localPrvtKeysUnreg.remove(name);
+    size_t newUnregSize = localPrvtKeysUnreg.size();
     keys_mutex.unlock();
     savePublicKeysIDs();
+    if (newUnregSize < oldUnregSize)
+    {
+        Fl::lock();
+        fl_alert("Account \"%s\" was successfully registered.\nPlease verify its details under \"Show account info\".", name.c_str());
+        Fl::unlock();
+    }
     return true;
 }
 

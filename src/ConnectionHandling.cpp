@@ -8,6 +8,7 @@
 #define connectionTimeOutInMs 5000
 #define connectionTimeOutCheckInMs 50
 #define checkForNewLiquis 1
+#define checkForNewContacts 1
 
 ConnectionHandling::ConnectionHandling(RequestBuilder *r, Fl_Box *s) : rqstBuilder(r), statusbar(s), log(nullptr)
 {
@@ -442,16 +443,22 @@ void* ConnectionHandling::downloadRoutine(void *connectionHandling)
     connection->connection_mutex.lock();
     size_t knownContacts = connection->servers.size();
     connection->connection_mutex.unlock();
-    if (goodUrl && type1entry!=nullptr && knownContacts<2 && connection->downloadRunning)
+    for (int i=0; i<5 && goodUrl && type1entry!=nullptr &&
+            (knownContacts<2 || checkForNewContacts>0) && connection->downloadRunning; i++)
     {
         string byteSequence;
         string url(connection->nonNotarySourceUrl);
-        url.append("ContactInfo.ci");
+        url.append("ContactInfo");
+        if (i>0) url.append(to_string(i));
+        url.append(".ci");
         if (downloadFile(url, byteSequence))
         {
             ContactInfo ci(byteSequence);
             if (ci.getIP().length()>3) connection->tryToStoreContactInfo(ci, false);
         }
+        connection->connection_mutex.lock();
+        knownContacts = connection->servers.size();
+        connection->connection_mutex.unlock();
     }
 
     // try to download some liqui IDs
