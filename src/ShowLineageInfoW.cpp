@@ -78,7 +78,7 @@ void ShowLineageInfoW::onReload(Fl_Widget *w, void *d)
     if (win->rqstNum <= 0) return;
     if (win->waitForDataThread!=nullptr) delete win->waitForDataThread;
     win->waitForDataThread = new pthread_t();
-    if (pthread_create(win->waitForDataThread, NULL, ShowLineageInfoW::waitForDataRoutine, (void*) win) < 0)
+    if (pthread_create((pthread_t*)win->waitForDataThread, NULL, ShowLineageInfoW::waitForDataRoutine, (void*) win) < 0)
     {
         return;
     }
@@ -184,8 +184,8 @@ void* ShowLineageInfoW::waitForDataRoutine(void *w)
         win->b->redraw();
     }
     usleep(200000);
+    Fl::flush();
     win->msgProcessor->deleteOldRqst(requestNumber);
     win->rqstNum = 0;
-    Fl::flush();
-    pthread_exit(NULL);
+    return NULL;
 }

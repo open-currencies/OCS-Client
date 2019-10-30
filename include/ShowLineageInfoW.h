@@ -38,7 +38,7 @@ private:
 
     static void onApplication(Fl_Widget *w, void *d);
     volatile unsigned long rqstNum;
-    pthread_t *waitForDataThread;
+    volatile pthread_t *waitForDataThread;
     static void onReload(Fl_Widget *w, void *d);
     static void* waitForDataRoutine(void *w);
 };

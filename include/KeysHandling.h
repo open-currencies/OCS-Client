@@ -65,7 +65,7 @@ private:
     mutex keys_mutex;
 
     // type 1 entry
-    Type1Entry* type1entry;
+    volatile Type1Entry* type1entry;
 
     // notaries public keys
     map<TNtrNr, CryptoPP::RSA::PublicKey*, TNtrNr::CompareTNtrNrs> notariesKeys;

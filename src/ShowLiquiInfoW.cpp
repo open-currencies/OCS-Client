@@ -403,7 +403,7 @@ void ShowLiquiInfoW::onRequest(Fl_Widget *w, void *d)
     if (win->rqstNum <= 0) return;
     if (win->waitForDataThread!=nullptr) delete win->waitForDataThread;
     win->waitForDataThread = new pthread_t();
-    if (pthread_create(win->waitForDataThread, NULL, ShowLiquiInfoW::waitForDataRoutine, (void*) win) < 0)
+    if (pthread_create((pthread_t*)win->waitForDataThread, NULL, ShowLiquiInfoW::waitForDataRoutine, (void*) win) < 0)
     {
         return;
     }
@@ -454,10 +454,10 @@ void* ShowLiquiInfoW::waitForDataRoutine(void *w)
     }
     usleep(200000);
     // clean up and exit
+    Fl::flush();
     win->msgProcessor->deleteOldRqst(requestNumber);
     win->rqstNum = 0;
-    Fl::flush();
-    pthread_exit(NULL);
+    return NULL;
 }
 
 const char* ShowLiquiInfoW::linkRoutine(Fl_Widget *w, const char *uri)

@@ -263,9 +263,9 @@ void* InternalThread::routine(void *internalThread)
         internal->ofinterest_mutex.unlock();
     }
     while(internal->running);
-    internal->stopped=true;
     internal->logInfo("InternalThread::routine stopped");
-    pthread_exit(NULL);
+    internal->stopped=true;
+    return NULL;
 }
 
 void InternalThread::addAccountPairOfInterest(string key, string liqui)

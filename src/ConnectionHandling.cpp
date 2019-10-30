@@ -200,7 +200,7 @@ RequestBuilder* ConnectionHandling::getRqstBuilder()
 
 MessageProcessor* ConnectionHandling::getMsgProcessor()
 {
-    return msgProcessor;
+    return ((MessageProcessor*)msgProcessor);
 }
 
 unsigned long ConnectionHandling::getNotaryNr()
@@ -227,7 +227,7 @@ void ConnectionHandling::startConnector(MessageProcessor* m)
 {
     connection_mutex.lock();
     msgProcessor = m;
-    msgProcessor->setConnectingHandling(this);
+    ((MessageProcessor*)msgProcessor)->setConnectingHandling(this);
     reachOutRunning=true;
 
     // start connectorThread
@@ -258,6 +258,7 @@ void ConnectionHandling::stopSafely()
     reachOutRunning=false;
     listenOnSocket=false;
     closeconnection(socketNr);
+    closeconnection(socketNrInAttempt);
     while (!reachOutStopped || !downloadStopped
             || !socketReaderStopped || !attemptInterrupterStopped) usleep(100000);
 }
@@ -301,7 +302,13 @@ bool ConnectionHandling::sendRequest(string &rqst)
         return false;
     }
     addRequest(rqst);
-    connectTo(connectedNotary);
+    // reconnect
+    HandlerNotaryPair* hnpair = new HandlerNotaryPair(this, connectedNotary);
+    pthread_t connectToThread;
+    if(pthread_create(&connectToThread, NULL, connectToNotaryRoutine, (void*) hnpair) >= 0)
+    {
+        pthread_detach(connectToThread);
+    }
 
     connection_mutex.unlock();
     return true;
@@ -332,7 +339,13 @@ bool ConnectionHandling::connectionEstablished()
         }
         else if (lastListeningTime + tolerableConnectionGapInMs/2 < currentTime || requestsStrLength()>0)
         {
-            connectTo(connectedNotary);
+            // reconnect
+            HandlerNotaryPair* hnpair = new HandlerNotaryPair(this, connectedNotary);
+            pthread_t connectToThread;
+            if(pthread_create(&connectToThread, NULL, connectToNotaryRoutine, (void*) hnpair) >= 0)
+            {
+                pthread_detach(connectToThread);
+            }
             connection_mutex.unlock();
             return true;
         }
@@ -487,7 +500,7 @@ void* ConnectionHandling::downloadRoutine(void *connectionHandling)
     }
 
     connection->downloadStopped=true;
-    pthread_exit(NULL);
+    return NULL;
 }
 
 void* ConnectionHandling::reachOutRoutine(void *connectionHandling)
@@ -515,7 +528,7 @@ void* ConnectionHandling::reachOutRoutine(void *connectionHandling)
         {
             // delete buffer
             connection->requests_buffer_mutex.lock();
-            connection->requestsStr="";
+            connection->requestsStr.clear();
             connection->requests_buffer_mutex.unlock();
         }
 
@@ -536,14 +549,20 @@ void* ConnectionHandling::reachOutRoutine(void *connectionHandling)
             string reportTxt("trying to connect to ");
             reportTxt.append(to_string(eligibleNotary));
             connection->logInfo(reportTxt.c_str());
-            connection->connectTo(eligibleNotary);
+            // reconnect
+            HandlerNotaryPair* hnpair = new HandlerNotaryPair(connection, eligibleNotary);
+            pthread_t connectToThread;
+            if(pthread_create(&connectToThread, NULL, connectToNotaryRoutine, (void*) hnpair) >= 0)
+            {
+                pthread_detach(connectToThread);
+            }
         }
         connection->connection_mutex.unlock();
         connection->condSleep(reachOutRoutineSleepTime);
     }
     while(connection->reachOutRunning);
     connection->reachOutStopped=true;
-    pthread_exit(NULL);
+    return NULL;
 }
 
 // mutex must be locked before start of this (and is locked after):
@@ -564,38 +583,49 @@ unsigned long ConnectionHandling::getSomeEligibleNotary()
     return 0;
 }
 
-// mutex must be locked before start of this (and will be locked after):
-void ConnectionHandling::connectTo(unsigned long notary)
+void *ConnectionHandling::connectToNotaryRoutine(void *handlerNotaryPair)
 {
-    if (!reachOutRunning) return;
+    HandlerNotaryPair* hNPair=(HandlerNotaryPair*) handlerNotaryPair;
+    ConnectionHandling* cHandler = hNPair->cHandling;
+    const unsigned long notary = hNPair->notary;
+    delete hNPair;
 
-    if (servers.count(notary)!=1)
+    cHandler->connection_mutex.lock();
+
+    if (!cHandler->reachOutRunning)
     {
-        return;
+        cHandler->connection_mutex.unlock();
+        return NULL;
     }
-    ContactInfo* ci=servers[notary];
 
-    // exit if connection still open
-    if (socketNr!=-1 && listenOnSocket) return;
-
-    // exit if not fully stopped
-    if (!socketReaderStopped)
+    if (cHandler->servers.count(notary)!=1)
     {
-        listenOnSocket=false;
-        closeconnection(socketNr);
-        return;
+        cHandler->connection_mutex.unlock();
+        return NULL;
+    }
+    ContactInfo* ci=cHandler->servers[notary];
+
+    // exit if connection not (fully) stopped
+    if ((cHandler->socketNr!=-1 && cHandler->listenOnSocket)
+            || !cHandler->socketReaderStopped)
+    {
+        cHandler->connection_mutex.unlock();
+        return NULL;
     }
 
     const string ip = ci->getIP();
     const int port = ci->getPort();
 
-    socketNrInAttempt=-1;
-    connection_mutex.unlock(); // unlock for the connection build up
+    cHandler->socketNrInAttempt=-1;
+    cHandler->socketReaderStopped=false;
+    cHandler->connection_mutex.unlock(); // unlock for the connection build up
     usleep(connectionTimeOutCheckInMs * 3 * 1000);
 
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == -1)
     {
+        cHandler->connection_mutex.lock();
+        cHandler->socketReaderStopped=true;
         goto fail;
     }
 
@@ -605,73 +635,70 @@ void ConnectionHandling::connectTo(unsigned long notary)
     server.sin_port = htons(port);
 
     // start attemptInterruptionThread
-    socketNrInAttempt=sock;
-    if(pthread_create(&attemptInterruptionThread, NULL, attemptInterrupter, (void*) this) < 0)
+    cHandler->socketNrInAttempt=sock;
+    if(pthread_create(&cHandler->attemptInterruptionThread, NULL, attemptInterrupter, (void*) cHandler) < 0)
     {
-        logError("ConnectionHandling:: failed to create attemptInterruptionThread");
+        cHandler->logError("ConnectionHandling:: failed to create attemptInterruptionThread");
+        cHandler->connection_mutex.lock();
+        cHandler->socketReaderStopped=true;
         goto fail;
     }
-    pthread_detach(attemptInterruptionThread);
+    pthread_detach(cHandler->attemptInterruptionThread);
 
-    if (connect(sock, (struct sockaddr *)&server, sizeof(server)) < 0) goto fail;
+    if (connect(sock, (struct sockaddr *)&server, sizeof(server)) < 0)
+    {
+        cHandler->connection_mutex.lock();
+        cHandler->socketNrInAttempt=-1;
+        cHandler->socketReaderStopped=true;
+        goto fail;
+    }
     else // connection established
     {
-        connection_mutex.lock();
-        socketNrInAttempt=-1;
-
-        // check again after lock
-        if (socketNr!=-1 && listenOnSocket)
-        {
-            if (socketNr!=sock) closeconnection(sock);
-            return;
-        }
-        if (!socketReaderStopped)
-        {
-            closeconnection(sock);
-            listenOnSocket=false;
-            closeconnection(socketNr);
-            return;
-        }
+        cHandler->connection_mutex.lock();
+        cHandler->socketNrInAttempt=-1;
 
         // set connection data
-        socketNr=sock;
-        listenOnSocket=true;
-        msgBuilder = new MessageBuilder(msgProcessor);
-        msgBuilder->setLogger(log);
-        if(pthread_create(&listenerThread, NULL, socketReader, (void*) this) < 0)
+        cHandler->socketNr=sock;
+        cHandler->listenOnSocket=true;
+        cHandler->msgBuilder = new MessageBuilder(((MessageProcessor*)cHandler->msgProcessor));
+        cHandler->msgBuilder->setLogger(cHandler->log);
+        if(pthread_create(&cHandler->listenerThread, NULL, socketReader, (void*) cHandler) < 0)
         {
-            listenOnSocket=false;
-            closeconnection(socketNr);
-            delete msgBuilder;
-            msgBuilder=nullptr;
-            socketNr=-1;
-            socketReaderStopped=true;
-            return;
+            cHandler->listenOnSocket=false;
+            closeconnection(cHandler->socketNr);
+            delete cHandler->msgBuilder;
+            cHandler->msgBuilder=nullptr;
+            cHandler->socketNr=-1;
+            cHandler->socketReaderStopped=true;
+            cHandler->connection_mutex.unlock();
+            return NULL;
         }
-        pthread_detach(listenerThread);
-        connectedNotary = notary;
+        pthread_detach(cHandler->listenerThread);
+        cHandler->connectedNotary = notary;
 
         // send outstanding messages + flush buffer:
-        requests_buffer_mutex.lock();
+        cHandler->requests_buffer_mutex.lock();
         // append connection close msg
         string rqst;
         byte type = 20;
         rqst.push_back((char)type);
-        rqstBuilder->packRequest(&rqst);
-        requestsStr.append(rqst);
+        cHandler->rqstBuilder->packRequest(&rqst);
+        cHandler->requestsStr.append(rqst);
         // send and exit
-        send(socketNr, requestsStr.c_str(), requestsStr.length(), 0);
-        requestsStr="";
-        requests_buffer_mutex.unlock();
+        send(cHandler->socketNr, cHandler->requestsStr.c_str(), cHandler->requestsStr.length(), MSG_NOSIGNAL);
+        cHandler->requestsStr.clear();
+        cHandler->requests_buffer_mutex.unlock();
 
-        return;
+        cHandler->connection_mutex.unlock();
+        return NULL;
     }
 fail:
     string reportTxt("ConnectionHandling:: failed to connect to socket ");
     reportTxt.append(to_string(sock));
-    logError(reportTxt.c_str());
+    cHandler->logError(reportTxt.c_str());
     closeconnection(sock);
-    connection_mutex.lock();
+    cHandler->connection_mutex.unlock();
+    return NULL;
 }
 
 void* ConnectionHandling::attemptInterrupter(void *connectionHandling)
@@ -686,14 +713,13 @@ void* ConnectionHandling::attemptInterrupter(void *connectionHandling)
         usleep(connectionTimeOutCheckInMs * 1000);
         if (sock != connection->socketNrInAttempt)
         {
-            // connection must have been established
             goto close;
         }
     }
     connection->closeconnection(sock); // timeout
 close:
     connection->attemptInterrupterStopped = true;
-    pthread_exit(NULL);
+    return NULL;
 }
 
 void* ConnectionHandling::socketReader(void *connectionHandling)
@@ -712,7 +738,7 @@ void* ConnectionHandling::socketReader(void *connectionHandling)
         if(n<=0) goto close;
         else
         {
-            connection->logInfo("incoming message, length:");
+            connection->logInfo("ConnectionHandling::socketReader: incoming message, length:");
             connection->logInfo(to_string(n).c_str());
             for (int i=0; i<n; i++)
             {
@@ -729,7 +755,7 @@ close:
     delete connection->msgBuilder;
     connection->msgBuilder=nullptr;
     connection->socketReaderStopped=true;
-    pthread_exit(NULL);
+    return NULL;
 }
 
 void ConnectionHandling::addRequest(string &rqst)
@@ -792,5 +818,9 @@ void ConnectionHandling::logInfo(const char *msg)
 void ConnectionHandling::logError(const char *msg)
 {
     if (log!=nullptr) log->error(msg);
+}
+
+ConnectionHandling::HandlerNotaryPair::HandlerNotaryPair(ConnectionHandling* c, unsigned long n) : cHandling(c), notary(n)
+{
 }
 

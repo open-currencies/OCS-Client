@@ -50,7 +50,7 @@ private:
     string liqui;
     volatile unsigned long rqstNum;
 
-    pthread_t *waitForListThread;
+    volatile pthread_t *waitForListThread;
 
     static void onChoice(Fl_Widget *w, void *d);
     static void onRequest(Fl_Widget *w, void *d);

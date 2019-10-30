@@ -52,7 +52,7 @@ private:
     Logger *log;
     void logInfo(const char *msg);
     void logError(const char *msg);
-    void deleteList(list<Type13Entry*> type13entries);
+    static void deleteList(list<Type13Entry*> type13entries);
     Type12Entry* createT12FromT13Str(string& str);
     Type12Entry* extractType12Entry(string &t13eList, CIDsSet &firstIDs, const bool keysAlreadyLocked, const bool firstBlockOnly);
     list<pair<Type12Entry*, CIDsSet*>>* extractType12Entries(string &t13eList, const bool keysAlreadyLocked);

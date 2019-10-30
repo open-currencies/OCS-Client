@@ -397,7 +397,7 @@ void* RefereeNoteW::checkDataRoutine(void *w)
         {
             win->dataStatusClear=true;
             win->checkThreadRunning=false;
-            pthread_exit(NULL);
+            return NULL;
         }
 
         if (win->refereeApplication) win->stake = ((Type5Entry*) t5Or15e)->getRefApplStake();
@@ -430,7 +430,7 @@ void* RefereeNoteW::checkDataRoutine(void *w)
 
         usleep(500000);
     }
-    pthread_exit(NULL);
+    return NULL;
 }
 
 void RefereeNoteW::onClose(Fl_Widget *w, void *d)

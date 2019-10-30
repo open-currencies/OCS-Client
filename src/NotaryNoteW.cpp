@@ -369,7 +369,7 @@ void* NotaryNoteW::checkDataRoutine(void *w)
 
         usleep(500000);
     }
-    pthread_exit(NULL);
+    return NULL;
 }
 
 void NotaryNoteW::onClose(Fl_Widget *w, void *d)

@@ -369,5 +369,5 @@ void* NewExchangeOfferW::checkDataRoutine(void *w)
 
         usleep(500000);
     }
-    pthread_exit(NULL);
+    return NULL;
 }

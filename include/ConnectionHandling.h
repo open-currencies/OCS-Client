@@ -53,7 +53,7 @@ private:
     RequestBuilder *rqstBuilder;
     mutex connection_mutex;
     Fl_Box *statusbar;
-    MessageProcessor* msgProcessor;
+    volatile MessageProcessor* msgProcessor;
     Logger *log;
     pthread_t connectorThread;
     string displayedLabel;
@@ -85,7 +85,13 @@ private:
 
     // routines
     unsigned long getSomeEligibleNotary();
-    void connectTo(unsigned long notary);
+    struct HandlerNotaryPair
+    {
+        ConnectionHandling* cHandling;
+        unsigned long notary;
+        HandlerNotaryPair(ConnectionHandling* c, unsigned long n);
+    };
+    static void *connectToNotaryRoutine(void *handlerNotaryPair);
     void condSleep(unsigned long targetSleepTimeInSec);
     void displayStatus(const char * statStr, bool connected);
     static void *reachOutRoutine(void *connectionHandling);

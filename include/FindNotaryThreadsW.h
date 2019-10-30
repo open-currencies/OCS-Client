@@ -44,7 +44,7 @@ private:
 
     volatile unsigned long rqstNum;
 
-    pthread_t *waitForListThread;
+    volatile pthread_t *waitForListThread;
 
     static void onRequest(Fl_Widget *w, void *d);
     static void* waitForListRoutine(void *w);

@@ -212,6 +212,7 @@ void onChoice(Fl_Widget *w, void *d)
         if (strcmp(ch->text(), "   Show account state") == 0)
         {
             ShowClaimsW *showClaimsW = new ShowClaimsW(internalThread);
+            showClaimsW->setLogger(logger);
             subWins.insert(subWins.end(), (Fl_Window*)showClaimsW);
             ((Fl_Window*)showClaimsW)->show();
         }

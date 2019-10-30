@@ -211,13 +211,15 @@ void ShowClaimsW::onRequest(Fl_Widget *w, void *d)
     if (result)
     {
         win->rqstNum = win->msgProcessor->addRqstAnticipation(rqst);
+        win->logInfo("ShowClaimsW::onRequest: sendRequest ...");
         win->connection->sendRequest(rqst);
     }
     // wait for answer
+    win->logInfo("ShowClaimsW::onRequest: starting waitForListThread ...");
     if (win->rqstNum <= 0) return;
     if (win->waitForListThread!=nullptr) delete win->waitForListThread;
     win->waitForListThread = new pthread_t();
-    if (pthread_create(win->waitForListThread, NULL, ShowClaimsW::waitForListRoutine, (void*) win) < 0)
+    if (pthread_create((pthread_t*)win->waitForListThread, NULL, ShowClaimsW::waitForListRoutine, (void*) win) < 0)
     {
         return;
     }
@@ -284,6 +286,7 @@ void ShowClaimsW::onNewClaim(Fl_Widget *w, void *d)
 void* ShowClaimsW::waitForListRoutine(void *w)
 {
     ShowClaimsW* win=(ShowClaimsW*) w;
+    win->logInfo("ShowClaimsW::waitForListRoutine");
     unsigned long long requestNumber = win->rqstNum;
     win->b->value("<h3>Loading ...</h3>");
     win->b->redraw();
@@ -415,8 +418,23 @@ void* ShowClaimsW::waitForListRoutine(void *w)
     }
     usleep(200000);
     // clean up and exit
+    Fl::flush();
     win->msgProcessor->deleteOldRqst(requestNumber);
     win->rqstNum = 0;
-    Fl::flush();
-    pthread_exit(NULL);
+    return NULL;
+}
+
+void ShowClaimsW::setLogger(Logger *l)
+{
+    log=l;
+}
+
+void ShowClaimsW::logInfo(const char *msg)
+{
+    if (log!=nullptr) log->info(msg);
+}
+
+void ShowClaimsW::logError(const char *msg)
+{
+    if (log!=nullptr) log->error(msg);
 }

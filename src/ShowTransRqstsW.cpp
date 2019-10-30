@@ -198,7 +198,7 @@ void ShowTransRqstsW::onRequest(Fl_Widget *w, void *d)
     if (win->rqstNum <= 0) return;
     if (win->waitForListThread!=nullptr) delete win->waitForListThread;
     win->waitForListThread = new pthread_t();
-    if (pthread_create(win->waitForListThread, NULL, ShowTransRqstsW::waitForListRoutine, (void*) win) < 0)
+    if (pthread_create((pthread_t*)win->waitForListThread, NULL, ShowTransRqstsW::waitForListRoutine, (void*) win) < 0)
     {
         return;
     }
@@ -272,8 +272,8 @@ void* ShowTransRqstsW::waitForListRoutine(void *w)
     }
     usleep(200000);
     // clean up and exit
+    Fl::flush();
     win->msgProcessor->deleteOldRqst(requestNumber);
     win->rqstNum = 0;
-    Fl::flush();
-    pthread_exit(NULL);
+    return NULL;
 }

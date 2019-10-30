@@ -42,7 +42,7 @@ private:
     Type10Entry* requestEntry;
 
     volatile unsigned long rqstNum;
-    pthread_t *waitForDataThread;
+    volatile pthread_t *waitForDataThread;
     static void onRequest(Fl_Widget *w, void *d);
     static void* waitForDataRoutine(void *w);
     static const char *linkRoutine(Fl_Widget *w, const char *uri);

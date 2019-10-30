@@ -85,6 +85,7 @@ unsigned long MessageProcessor::addRqstAnticipation(string &rqst)
 
 bool MessageProcessor::storeProcessedRqst(string &rqst, list<pair<Type12Entry*, CIDsSet*>>* result)
 {
+    logInfo("MessageProcessor::storeProcessedRqst start");
     rqststore_mutex.lock();
     if (anticipatedRqstByStr.count(rqst)!=1)
     {
@@ -99,11 +100,13 @@ bool MessageProcessor::storeProcessedRqst(string &rqst, list<pair<Type12Entry*, 
     anticipatedRqstByStr.erase(rqst);
     anticipatedRqstByNum.erase(num);
     rqststore_mutex.unlock();
+    logInfo("MessageProcessor::storeProcessedRqst end");
     return true;
 }
 
 bool MessageProcessor::storeProcessedRqstStr(string &rqst, string* result)
 {
+    logInfo("MessageProcessor::storeProcessedRqstStr start");
     rqststore_mutex.lock();
     if (anticipatedRqstByStr.count(rqst)!=1)
     {
@@ -118,6 +121,7 @@ bool MessageProcessor::storeProcessedRqstStr(string &rqst, string* result)
     anticipatedRqstByStr.erase(rqst);
     anticipatedRqstByNum.erase(num);
     rqststore_mutex.unlock();
+    logInfo("MessageProcessor::storeProcessedRqstStr end");
     return true;
 }
 
@@ -138,6 +142,7 @@ list<pair<Type12Entry*, CIDsSet*>>* MessageProcessor::getProcessedRqst(unsigned 
 
 string* MessageProcessor::getProcessedRqstStr(unsigned long rqstNum)
 {
+    logInfo("MessageProcessor::getProcessedRqstStr start");
     rqststore_mutex.lock();
     if (processedRqstsStr.count(rqstNum)!=1)
     {
@@ -146,11 +151,13 @@ string* MessageProcessor::getProcessedRqstStr(unsigned long rqstNum)
     }
     string* out = processedRqstsStr[rqstNum];
     rqststore_mutex.unlock();
+    logInfo("MessageProcessor::getProcessedRqstStr end");
     return out;
 }
 
 void MessageProcessor::ignoreOldRqst(unsigned long rqstNum)
 {
+    logInfo("MessageProcessor::ignoreOldRqst");
     rqststore_mutex.lock();
     // delete from anticipation lists
     if (anticipatedRqstByNum.count(rqstNum)>0)
@@ -171,6 +178,7 @@ void MessageProcessor::ignoreOldRqst(unsigned long rqstNum)
     }
     processedRqsts.erase(rqstNum);
     rqststore_mutex.unlock();
+    logInfo("MessageProcessor::ignoreOldRqst done");
 }
 
 void MessageProcessor::deleteOldRqst(unsigned long rqstNum)
@@ -285,7 +293,7 @@ void MessageProcessor::heartBeatMsg(const size_t n, byte *message)
 
 void MessageProcessor::idInfoMsg(const size_t n, byte *message)
 {
-    logInfo("new MessageProcessor::idInfoMsg");
+    logInfo("MessageProcessor::idInfoMsg start");
     string str;
     for (size_t i=1; i<n; i++) str.push_back((char)message[i]);
     size_t i = 0;
@@ -393,11 +401,12 @@ void MessageProcessor::idInfoMsg(const size_t n, byte *message)
         return;
     }
     if (!stored) deleteList(entriesList);
+    logInfo("MessageProcessor::idInfoMsg end");
 }
 
 void MessageProcessor::claimsMsg(const size_t n, byte *message)
 {
-    logInfo("new MessageProcessor::claimsMsg");
+    logInfo("MessageProcessor::claimsMsg start");
     string str;
     for (size_t i=1; i<n; i++) str.push_back((char)message[i]);
     size_t i = 0;
@@ -448,6 +457,7 @@ void MessageProcessor::claimsMsg(const size_t n, byte *message)
     // store as processed request
     bool stored = storeProcessedRqst(rqst, claimsList);
     if (!stored) deleteList(claimsList);
+    logInfo("MessageProcessor::claimsMsg end");
 }
 
 void MessageProcessor::notaryInfoMsg(const size_t n, byte *message)
@@ -500,6 +510,7 @@ void MessageProcessor::notaryInfoMsg(const size_t n, byte *message)
     // store as processed request
     bool stored = storeProcessedRqstStr(rqst, notaryInfoStr);
     if (!stored) delete notaryInfoStr;
+    logInfo("new MessageProcessor::notaryInfoMsg end");
 }
 
 void MessageProcessor::refInfoMsg(const size_t n, byte *message)
@@ -547,16 +558,21 @@ void MessageProcessor::refInfoMsg(const size_t n, byte *message)
     // store as processed request
     bool stored = storeProcessedRqstStr(rqst, refInfoStr);
     if (!stored) delete refInfoStr;
+    logInfo("new MessageProcessor::refInfoMsg end");
 }
 
 void MessageProcessor::decThreadsMsg(const size_t n, byte *message)
 {
-    logInfo("new MessageProcessor::decThreadsMsg");
+    logInfo("MessageProcessor::decThreadsMsg start");
     string str;
     for (size_t i=1; i<n; i++) str.push_back((char)message[i]);
     size_t i = 0;
     // extract initial request
-    if (i+8 > str.length()) return;
+    if (i+8 > str.length())
+    {
+        logError("MessageProcessor::decThreadsMsg: bad format 1");
+        return;
+    }
     string lenOfRqstStr = str.substr(i, 8);
     i+=8;
     unsigned long long lenOfRqst = u.byteSeqAsUll(lenOfRqstStr);
@@ -588,6 +604,7 @@ void MessageProcessor::decThreadsMsg(const size_t n, byte *message)
         return;
     }
     if (!stored) deleteList(entriesList);
+    logInfo("MessageProcessor::decThreadsMsg end");
 }
 
 void MessageProcessor::essentialsMsg(const size_t n, byte *message)
@@ -729,7 +746,7 @@ void MessageProcessor::essentialsMsg(const size_t n, byte *message)
 
 void MessageProcessor::transactionsMsg(const size_t n, byte *message)
 {
-    logInfo("new MessageProcessor::transactionsMsg");
+    logInfo("MessageProcessor::transactionsMsg start");
     string str;
     for (size_t i=1; i<n; i++) str.push_back((char)message[i]);
     size_t i = 0;
@@ -770,6 +787,7 @@ void MessageProcessor::transactionsMsg(const size_t n, byte *message)
         return;
     }
     if (!stored) deleteList(transactionsList);
+    logInfo("MessageProcessor::transactionsMsg end");
 }
 
 void MessageProcessor::nextClaimMsg(const size_t n, byte *message)
@@ -928,6 +946,7 @@ list<pair<Type12Entry*, CIDsSet*>>* MessageProcessor::extractType12Entries(strin
         {
             if (t12e != nullptr) delete t12e;
             delete firstIDs;
+            logError("MessageProcessor::extractType12Entries: bad format 3");
             deleteList(out);
             return nullptr;
         }
@@ -936,6 +955,7 @@ list<pair<Type12Entry*, CIDsSet*>>* MessageProcessor::extractType12Entries(strin
     }
     if (i!=t13eList.length())
     {
+        logError("MessageProcessor::extractType12Entries: bad format 4");
         deleteList(out);
         return nullptr;
     }
@@ -944,6 +964,7 @@ list<pair<Type12Entry*, CIDsSet*>>* MessageProcessor::extractType12Entries(strin
 
 Type12Entry* MessageProcessor::extractType12Entry(string &t13eList, CIDsSet &firstIDs, const bool keysAlreadyLocked, const bool firstBlockOnly)
 {
+    logInfo("MessageProcessor::extractType12Entry: start");
     Type12Entry *t12e = nullptr;
     list<Type13Entry*> type13entries;
     size_t i = 0;
@@ -995,9 +1016,9 @@ Type12Entry* MessageProcessor::extractType12Entry(string &t13eList, CIDsSet &fir
     }
     if (i!=t13eList.length() || t12e==nullptr)
     {
+        logError("bad t13e list in MessageProcessor::extractType12Entry");
         deleteList(type13entries);
         if (t12e!=nullptr) delete t12e;
-        logError("bad t13e list in MessageProcessor::extractType12Entry");
         return nullptr;
     }
 
@@ -1198,6 +1219,7 @@ Type12Entry* MessageProcessor::extractType12Entry(string &t13eList, CIDsSet &fir
     if (status != 2) logError("MessageProcessor::extractType12Entry: remaining status != 2");
     if (firstIDs.isEmpty()) logError("MessageProcessor::extractType12Entry: firstIDs is empty");
     // clean up
+    logInfo("MessageProcessor::extractType12Entry: clean up");
     deleteList(type13entries);
     // return result
     if (!success)
@@ -1207,7 +1229,7 @@ Type12Entry* MessageProcessor::extractType12Entry(string &t13eList, CIDsSet &fir
         logError("no success in for loop of MessageProcessor::extractType12Entry");
         return nullptr;
     }
-    logInfo("success in for loop of MessageProcessor::extractType12Entry");
+    logInfo("MessageProcessor::extractType12Entry: end");
     return t12e;
 }
 

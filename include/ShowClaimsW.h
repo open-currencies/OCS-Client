@@ -16,6 +16,7 @@
 #include <string>
 #include <iostream>
 #include <cstring>
+#include "Logger.h"
 
 using namespace std;
 
@@ -24,6 +25,7 @@ class ShowClaimsW : Fl_Window
 public:
     ShowClaimsW(InternalThread *i);
     ~ShowClaimsW();
+    void setLogger(Logger *l);
 protected:
 private:
     InternalThread *internal;
@@ -57,12 +59,16 @@ private:
     string liqui;
     volatile unsigned long rqstNum;
 
-    pthread_t *waitForListThread;
+    volatile pthread_t *waitForListThread;
 
     static void onChoice(Fl_Widget *w, void *d);
     static void onRequest(Fl_Widget *w, void *d);
     static void onNewClaim(Fl_Widget *w, void *d);
     static void* waitForListRoutine(void *w);
+
+    Logger *log;
+    void logInfo(const char *msg);
+    void logError(const char *msg);
 };
 
 #endif // SHOWCLAIMSW_H

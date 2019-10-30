@@ -50,7 +50,7 @@ private:
     string *publicKeyStr;
 
     volatile unsigned long rqstNum;
-    pthread_t *waitForDataThread;
+    volatile pthread_t *waitForDataThread;
     static void onRequest(Fl_Widget *w, void *d);
     static void* waitForDataRoutine(void *w);
 };

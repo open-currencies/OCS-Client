@@ -499,7 +499,7 @@ void* TransferLiquiW::checkDataRoutine(void *w)
 
         usleep(500000);
     }
-    pthread_exit(NULL);
+    return NULL;
 }
 
 void TransferLiquiW::onClose(Fl_Widget *w, void *d)

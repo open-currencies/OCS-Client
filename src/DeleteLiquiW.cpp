@@ -294,7 +294,7 @@ void* DeleteLiquiW::checkDataRoutine(void *w)
 
         usleep(500000);
     }
-    pthread_exit(NULL);
+    return NULL;
 }
 
 void DeleteLiquiW::onClose(Fl_Widget *w, void *d)

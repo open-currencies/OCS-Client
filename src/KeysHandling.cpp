@@ -61,7 +61,7 @@ void KeysHandling::loadType1Entry()
     else
     {
         type1entry=new Type1Entry("conf/type1entry");
-        if (!type1entry->isGood())
+        if (!((Type1Entry*)type1entry)->isGood())
         {
             delete type1entry;
             type1entry = nullptr;
@@ -71,14 +71,14 @@ void KeysHandling::loadType1Entry()
     }
 
     // initialize notaries mentioned in the type1entry
-    unsigned short latestLin = type1entry->latestLin();
+    unsigned short latestLin = ((Type1Entry*)type1entry)->latestLin();
     for (unsigned short i=1; i<=latestLin; i++)
     {
-        unsigned long N = type1entry->getMaxActing(i);
+        unsigned long N = ((Type1Entry*)type1entry)->getMaxActing(i);
         for (unsigned long j=1; j<=N; j++)
         {
             TNtrNr tNtrNr(i,j);
-            string *publicKeyStr = type1entry->getPublicKey(i,j);
+            string *publicKeyStr = ((Type1Entry*)type1entry)->getPublicKey(i,j);
             CryptoPP::RSA::PublicKey *publicKey = new CryptoPP::RSA::PublicKey();
             CryptoPP::ByteQueue bq;
             bq.Put((const byte*)publicKeyStr->c_str(), publicKeyStr->length());
@@ -423,7 +423,7 @@ CompleteID KeysHandling::getLastT2eIdFirst()
 bool KeysHandling::addNotaryKeyEtc(string &publicKeyStr, CompleteID type2entryId, CompleteID terminationId)
 {
     if (type2entryId.getNotary()<=0 || terminationId.getNotary()<=0) return false;
-    const unsigned short lineage = type1entry->getLineage(type2entryId.getTimeStamp());
+    const unsigned short lineage = ((Type1Entry*)type1entry)->getLineage(type2entryId.getTimeStamp());
     // calculate new notaryNr
     TNtrNr notaryNr;
     if (type2entryIdsFirst.size()>0)
@@ -436,12 +436,12 @@ bool KeysHandling::addNotaryKeyEtc(string &publicKeyStr, CompleteID type2entryId
             {
                 return false;
             }
-            notaryNr = TNtrNr(lineage, type1entry->getMaxActing(lineage)+1);
+            notaryNr = TNtrNr(lineage, ((Type1Entry*)type1entry)->getMaxActing(lineage)+1);
         }
     }
     else
     {
-        notaryNr = TNtrNr(lineage, type1entry->getMaxActing(lineage)+1);
+        notaryNr = TNtrNr(lineage, ((Type1Entry*)type1entry)->getMaxActing(lineage)+1);
     }
     // check and add
     if (!notaryNr.isGood() || notariesKeys.count(notaryNr)!=0)
@@ -488,7 +488,7 @@ void KeysHandling::unlock()
 unsigned long KeysHandling::getAppointedNotariesNum(unsigned short lineage)
 {
     keys_mutex.lock();
-    if (lineage < 1 || lineage > type1entry->latestLin())
+    if (lineage < 1 || lineage > ((Type1Entry*)type1entry)->latestLin())
     {
         keys_mutex.unlock();
         return 0;
@@ -653,7 +653,7 @@ string KeysHandling::getLocalPblcKeyUnreg()
 
 Type1Entry* KeysHandling::getType1Entry()
 {
-    return type1entry;
+    return ((Type1Entry*)type1entry);
 }
 
 bool KeysHandling::toString(CryptoPP::RSA::PublicKey &publicKey, string &str)
