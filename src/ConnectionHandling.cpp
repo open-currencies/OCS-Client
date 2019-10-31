@@ -238,7 +238,7 @@ void ConnectionHandling::startConnector(MessageProcessor* m)
         exit(EXIT_FAILURE);
     }
     pthread_detach(connectorThread);
-    logInfo("connectorThread in  ConnectionHandling started");
+    logInfo("connectorThread in ConnectionHandling started");
 
     // start download thread
     downloadRunning=true;
@@ -786,28 +786,30 @@ bool ConnectionHandling::downloadFile(string &url, string &output)
 {
     if (output.length()>0) return false;
     CURL* curl = curl_easy_init();
+    if (curl==nullptr) return false;
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
     curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "deflate");
-    stringstream out;
+    stringstream strstream;
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, ConnectionHandling::write_data);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &out);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &strstream);
     if (curl_easy_perform(curl) != CURLE_OK)
     {
         curl_easy_cleanup(curl);
         return false;
     }
-    output = out.str();
+    output.append(strstream.str());
     curl_easy_cleanup(curl);
     return true;
 }
 
 size_t ConnectionHandling::write_data(void *ptr, size_t size, size_t nmemb, void *stream)
 {
-    string data((const char*) ptr, (size_t) size * nmemb);
-    *((stringstream*) stream) << data << endl;
-    return size * nmemb;
+    size_t realsize = size * nmemb;
+    string data((const char*) ptr, realsize);
+    *((stringstream*) stream) << data;
+    return realsize;
 }
 
 void ConnectionHandling::logInfo(const char *msg)
