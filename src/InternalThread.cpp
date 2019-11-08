@@ -353,7 +353,11 @@ void InternalThread::addIdOfInterest(CompleteID id)
 void InternalThread::stopSafely()
 {
     running=false;
-    while (!stopped) usleep(100000);
+    while (!stopped)
+    {
+        logInfo("InternalThread::stopSafely: !stopped");
+        usleep(100000);
+    }
 }
 
 void InternalThread::logInfo(const char *msg)

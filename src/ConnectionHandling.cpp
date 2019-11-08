@@ -260,7 +260,14 @@ void ConnectionHandling::stopSafely()
     closeconnection(socketNr);
     closeconnection(socketNrInAttempt);
     while (!reachOutStopped || !downloadStopped
-            || !socketReaderStopped || !attemptInterrupterStopped) usleep(100000);
+            || !socketReaderStopped || !attemptInterrupterStopped)
+    {
+        if (!reachOutStopped) logInfo("ConnectionHandling::stopSafely: !reachOutStopped");
+        if (!downloadStopped) logInfo("ConnectionHandling::stopSafely: !downloadStopped");
+        if (!socketReaderStopped) logInfo("ConnectionHandling::stopSafely: !socketReaderStopped");
+        if (!attemptInterrupterStopped) logInfo("ConnectionHandling::stopSafely: !attemptInterrupterStopped");
+        usleep(100000);
+    }
 }
 
 void ConnectionHandling::closeconnection(int sock)
@@ -452,28 +459,6 @@ void* ConnectionHandling::downloadRoutine(void *connectionHandling)
         }
     }
 
-    // try to download some contact
-    connection->connection_mutex.lock();
-    size_t knownContacts = connection->servers.size();
-    connection->connection_mutex.unlock();
-    for (int i=0; i<5 && goodUrl && type1entry!=nullptr &&
-            (knownContacts<2 || checkForNewContacts>0) && connection->downloadRunning; i++)
-    {
-        string byteSequence;
-        string url(connection->nonNotarySourceUrl);
-        url.append("ContactInfo");
-        if (i>0) url.append(to_string(i));
-        url.append(".ci");
-        if (downloadFile(url, byteSequence))
-        {
-            ContactInfo ci(byteSequence);
-            if (ci.getIP().length()>3) connection->tryToStoreContactInfo(ci, false);
-        }
-        connection->connection_mutex.lock();
-        knownContacts = connection->servers.size();
-        connection->connection_mutex.unlock();
-    }
-
     // try to download some liqui IDs
     connection->rqstBuilder->getLiquiditiesHandling()->liquis_mutex.lock();
     size_t numOfRegisteredLiquis = connection->rqstBuilder->getLiquiditiesHandling()->numOfRegistered();
@@ -497,6 +482,28 @@ void* ConnectionHandling::downloadRoutine(void *connectionHandling)
             connection->rqstBuilder->getLiquiditiesHandling()->loadIDsFromFile(true);
             connection->rqstBuilder->getLiquiditiesHandling()->saveIDs();
         }
+    }
+
+    // try to download some contacts
+    connection->connection_mutex.lock();
+    size_t knownContacts = connection->servers.size();
+    connection->connection_mutex.unlock();
+    for (int i=0; i<5 && goodUrl && type1entry!=nullptr &&
+            (knownContacts<2 || checkForNewContacts>0) && connection->downloadRunning; i++)
+    {
+        string byteSequence;
+        string url(connection->nonNotarySourceUrl);
+        url.append("ContactInfo");
+        if (i>0) url.append(to_string(i));
+        url.append(".ci");
+        if (downloadFile(url, byteSequence))
+        {
+            ContactInfo ci(byteSequence);
+            if (ci.getIP().length()>3) connection->tryToStoreContactInfo(ci, false);
+        }
+        connection->connection_mutex.lock();
+        knownContacts = connection->servers.size();
+        connection->connection_mutex.unlock();
     }
 
     connection->downloadStopped=true;
