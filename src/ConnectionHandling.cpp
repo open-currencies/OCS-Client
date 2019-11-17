@@ -9,6 +9,8 @@
 #define connectionTimeOutCheckInMs 50
 #define checkForNewLiquis 1
 #define checkForNewContacts 1
+#define CA_CERT_FILE "conf/ca-bundle.crt"
+//#define MSG_NOSIGNAL 0 // comment in for mingw
 
 ConnectionHandling::ConnectionHandling(RequestBuilder *r, Fl_Box *s) : rqstBuilder(r), statusbar(s), log(nullptr)
 {
@@ -441,9 +443,8 @@ void* ConnectionHandling::downloadRoutine(void *connectionHandling)
     if (goodUrl && type1entry==nullptr && connection->downloadRunning)
     {
         string byteSequence;
-        string url(connection->nonNotarySourceUrl);
-        url.append("entry.t1e");
-        if (downloadFile(url, byteSequence))
+        string filename("entry.t1e");
+        if (downloadFile(connection->nonNotarySourceUrl, filename, byteSequence))
         {
             Type1Entry t1e;
             if (t1e.createFromString(byteSequence) && t1e.isGood())
@@ -457,6 +458,7 @@ void* ConnectionHandling::downloadRoutine(void *connectionHandling)
             }
             else connection->logError("could not create good Type1Entry");
         }
+        else connection->logError(byteSequence.c_str());
     }
 
     // try to download some liqui IDs
@@ -467,9 +469,8 @@ void* ConnectionHandling::downloadRoutine(void *connectionHandling)
             && (numOfRegisteredLiquis==0 || checkForNewLiquis>0))
     {
         string byteSequence;
-        string url(connection->nonNotarySourceUrl);
-        url.append("liquisIDs.json");
-        if (downloadFile(url, byteSequence))
+        string filename("liquisIDs.json");
+        if (downloadFile(connection->nonNotarySourceUrl, filename, byteSequence))
         {
             connection->rqstBuilder->getLiquiditiesHandling()->liquis_mutex.lock();
             if (connection->rqstBuilder->getLiquiditiesHandling()->numOfRegistered()==0 || checkForNewLiquis>0)
@@ -482,6 +483,7 @@ void* ConnectionHandling::downloadRoutine(void *connectionHandling)
             connection->rqstBuilder->getLiquiditiesHandling()->loadIDsFromFile(true);
             connection->rqstBuilder->getLiquiditiesHandling()->saveIDs();
         }
+        else connection->logError(byteSequence.c_str());
     }
 
     // try to download some contacts
@@ -492,15 +494,16 @@ void* ConnectionHandling::downloadRoutine(void *connectionHandling)
             (knownContacts<2 || checkForNewContacts>0) && connection->downloadRunning; i++)
     {
         string byteSequence;
-        string url(connection->nonNotarySourceUrl);
-        url.append("ContactInfo");
-        if (i>0) url.append(to_string(i));
-        url.append(".ci");
-        if (downloadFile(url, byteSequence))
+        string filename("ContactInfo");
+        if (i>0) filename.append(to_string(i));
+        filename.append(".ci");
+        if (downloadFile(connection->nonNotarySourceUrl, filename, byteSequence))
         {
             ContactInfo ci(byteSequence);
             if (ci.getIP().length()>3) connection->tryToStoreContactInfo(ci, false);
         }
+        else connection->logError(byteSequence.c_str());
+
         connection->connection_mutex.lock();
         knownContacts = connection->servers.size();
         connection->connection_mutex.unlock();
@@ -789,26 +792,51 @@ unsigned long long ConnectionHandling::systemTimeInMs()
     return ms.count();
 }
 
-bool ConnectionHandling::downloadFile(string &url, string &output)
+bool ConnectionHandling::downloadFile(string &url_part1, string &url_part2, string &output)
 {
     if (output.length()>0) return false;
-    CURL* curl = curl_easy_init();
-    if (curl==nullptr) return false;
-    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-    curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
-    curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "deflate");
-    stringstream strstream;
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, ConnectionHandling::write_data);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &strstream);
-    if (curl_easy_perform(curl) != CURLE_OK)
+    string server(url_part1);
+    // erase "http://"
+    string toErase("http://");
+    size_t pos = server.find(toErase);
+    if (pos != string::npos) server.erase(pos, toErase.length());
+    // erase "http://"
+    toErase.clear();
+    toErase.append("https://");
+    pos = server.find(toErase);
+    if (pos != string::npos) server.erase(pos, toErase.length());
+    // find first "/"
+    pos = server.find("/");
+    // build filepath and correct server name
+    string filepath = server.substr(pos, server.length()-pos);
+    filepath.append(url_part2);
+    server = server.substr(0, pos);
+    // build SSLClient
+    httplib::SSLClient client(server.c_str());
+    client.set_ca_cert_path(CA_CERT_FILE);
+    client.enable_server_certificate_verification(true);
+    // get and process data
+    auto res = client.Get(filepath.c_str());
+    if (res)
     {
-        curl_easy_cleanup(curl);
+        output.append(res->body);
+        return true;
+    }
+    else
+    {
+        auto result = client.get_openssl_verify_result();
+        if (result)
+        {
+            output.append("verify error: ");
+            output.append(X509_verify_cert_error_string(result));
+            output.append("\n");
+        }
+        output.append("failed to download ");
+        output.append(filepath);
+        output.append(" from ");
+        output.append(server);
         return false;
     }
-    output.append(strstream.str());
-    curl_easy_cleanup(curl);
-    return true;
 }
 
 size_t ConnectionHandling::write_data(void *ptr, size_t size, size_t nmemb, void *stream)

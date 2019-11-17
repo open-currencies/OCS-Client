@@ -215,9 +215,10 @@ bool LiquiditiesHandling::setId(string name, CompleteID id)
     liquis_mutex.unlock();
     if (newUnregSize < oldUnregSize)
     {
-        Fl::lock();
-        fl_alert("Liquidity \"%s\" was successfully registered.\nPlease verify its details under \"Show liquidity info\".", name.c_str());
-        Fl::unlock();
+        string *msg = new string("Liquidity \"");
+        msg->append(name.c_str());
+        msg->append("\" was successfully registered.\nPlease verify its details under \"Show liquidity info\".");
+        Fl::awake((void*)msg);
     }
     saveIDs();
     return true;

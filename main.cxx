@@ -156,7 +156,17 @@ int main (int argc, char ** argv)
     internalThread->setLogger(logger);
     internalThread->start();
 
-    return(Fl::run());
+    string *msg;
+    while (Fl::wait() > 0)
+    {
+        if ((msg = (string *) Fl::thread_message()) != NULL)
+        {
+            fl_alert("%s", msg->c_str());
+            delete msg;
+        }
+    }
+
+    return (Fl::run());
 }
 
 void onChoice(Fl_Widget *w, void *d)

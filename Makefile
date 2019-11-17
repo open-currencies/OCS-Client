@@ -23,7 +23,7 @@ LiquiditiesHandling: src/LiquiditiesHandling.cpp include/LiquiditiesHandling.h
 	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 InternalThread: src/InternalThread.cpp include/InternalThread.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 MessageBuilder: src/MessageBuilder.cpp include/MessageBuilder.h
 	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
@@ -32,94 +32,94 @@ RequestBuilder: src/RequestBuilder.cpp include/RequestBuilder.h
 	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 MessageProcessor: src/MessageProcessor.cpp include/MessageProcessor.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 ConnectionHandling: src/ConnectionHandling.cpp include/ConnectionHandling.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 NewAccountW: src/NewAccountW.cpp include/NewAccountW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 TransferLiquiW: src/TransferLiquiW.cpp include/TransferLiquiW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 ShowClaimsW: src/ShowClaimsW.cpp include/ShowClaimsW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 TransRequestsW: src/TransRequestsW.cpp include/TransRequestsW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 NewTransRequestW: src/NewTransRequestW.cpp include/NewTransRequestW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 ShowTransRqstsW: src/ShowTransRqstsW.cpp include/ShowTransRqstsW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 ShowTransInfoW: src/ShowTransInfoW.cpp include/ShowTransInfoW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 ShowKeyInfoW: src/ShowKeyInfoW.cpp include/ShowKeyInfoW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 ShowLiquiInfoW: src/ShowLiquiInfoW.cpp include/ShowLiquiInfoW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -I../NME-distrib/Src -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -I../NME-distrib/Src -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 OperationProposalW: src/OperationProposalW.cpp include/OperationProposalW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -I../NME-distrib/Src -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -I../NME-distrib/Src -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 CreoleCheatSheatW: src/CreoleCheatSheatW.cpp include/CreoleCheatSheatW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 FindRefThreadsW: src/FindRefThreadsW.cpp include/FindRefThreadsW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 ShowDecThreadW: src/ShowDecThreadW.cpp include/ShowDecThreadW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -I../NME-distrib/Src -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -I../NME-distrib/Src -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 FeeAndStakeCalcW: src/FeeAndStakeCalcW.cpp include/FeeAndStakeCalcW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 RefereeApplicationW: src/RefereeApplicationW.cpp include/RefereeApplicationW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -I../NME-distrib/Src -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -I../NME-distrib/Src -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 RefereeNoteW: src/RefereeNoteW.cpp include/RefereeNoteW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -I../NME-distrib/Src -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -I../NME-distrib/Src -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 ShowRefInfoW: src/ShowRefInfoW.cpp include/ShowRefInfoW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 DeleteLiquiW: src/DeleteLiquiW.cpp include/DeleteLiquiW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 ExchangeOffersW: src/ExchangeOffersW.cpp include/ExchangeOffersW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 NewExchangeOfferW: src/NewExchangeOfferW.cpp include/NewExchangeOfferW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 ShowExchangeOffersW: src/ShowExchangeOffersW.cpp include/ShowExchangeOffersW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 AcceptOfferW: src/AcceptOfferW.cpp include/AcceptOfferW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 ShowLineageInfoW: src/ShowLineageInfoW.cpp include/ShowLineageInfoW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -I../NME-distrib/Src -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -I../NME-distrib/Src -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 NotaryApplicationW: src/NotaryApplicationW.cpp include/NotaryApplicationW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -I../NME-distrib/Src -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -I../NME-distrib/Src -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 ShowNotaryInfoW: src/ShowNotaryInfoW.cpp include/ShowNotaryInfoW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -I../NME-distrib/Src -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -I../NME-distrib/Src -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 FindNotaryThreadsW: src/FindNotaryThreadsW.cpp include/FindNotaryThreadsW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -I../NME-distrib/Src -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -I../NME-distrib/Src -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 NotaryNoteW: src/NotaryNoteW.cpp include/NotaryNoteW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -I../NME-distrib/Src -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -I../NME-distrib/Src -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 AssignLiquiNameW: src/AssignLiquiNameW.cpp include/AssignLiquiNameW.h
-	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../curl-7.63.0/include -I../NME-distrib/Src -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../openssl-1.0.2t/include -I../cpp-httplib -I../NME-distrib/Src -c src/$@.cpp -o obj/Release/src/$@.o -std=c++11
 
 Fl_Html_Formatter: src/Fl_Html_Formatter.cxx include/Fl_Html_Formatter.H 
 	$(CXX) -I.. $(CXXFLAGS) -Iinclude -c src/$@.cxx -o obj/Release/src/$@.o -std=c++11

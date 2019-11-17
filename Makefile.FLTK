@@ -5,23 +5,22 @@ endif
 
 FLTKCONFIG   = ../FLTK/fltk-1.3.4-2/fltk-config
 CXX          = $(shell $(FLTKCONFIG) --cxx)
-CXXFLAGS     = $(shell $(FLTKCONFIG) --cxxflags) -Wall -DCURL_STATICLIB -I.
+CXXFLAGS     = $(shell $(FLTKCONFIG) --cxxflags) -Wall -I.
 LINKFLTK     = $(shell $(FLTKCONFIG) --ldstaticflags)
 LINKFLTK_GL  = $(shell $(FLTKCONFIG) --use-gl --ldstaticflags)
 LINKFLTK_IMG = $(shell $(FLTKCONFIG) --use-images --ldstaticflags)
 LINKFLTK_ALL = $(shell $(FLTKCONFIG) --use-images --use-gl --ldstaticflags)
 .SUFFIXES: .cxx .h .fl .o $(EXEEXT)
 
-# NOTE: add "-static-libgcc -static-libstdc++ -no-pie -Wl,-Bstatic -lstdc++ -lpthread -lwsock32 -lws2_32 -lwinmm -Wl,-Bdynamic" under mingw at the end (for linker)
+# NOTE: add "-static-libgcc -static-libstdc++ -no-pie -Wl,-Bstatic -lstdc++ -lpthread -lwsock32 -lssl -lcrypto -lws2_32 -lgdi32 -lwinmm -Wl,-Bdynamic" under mingw at the end (for linker)
 # NOTE: for mingw: first execute "windres icon.rc -O coff -o icon.res" to have icon.res and add "icon.res" at the end of linker statement
-# NOTE: build libcurl under "HTTP_ONLY" and without SSL for mingw
 
 # HOW TO COMPILE
 .cxx.o:
 	@echo "*** Compile $<..."
-	$(CXX) -I.. $(CXXFLAGS) -c $< -o $@ -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../NME-distrib/Src -I../curl-7.63.0/include -std=c++11
+	$(CXX) -I.. $(CXXFLAGS) -c $< -o $@ -Iinclude -I../EntriesHandling/include -I../cryptopp610 -I../NME-distrib/Src -I../openssl-1.0.2t/include -I../cpp-httplib -std=c++11
 
 # HOW TO LINK
 .o$(EXEEXT):
 	@echo "*** Linking $@..."
-	$(CXX) $< -Iinclude obj/Release/src/Fl_Html_Formatter.o obj/Release/src/Fl_Html_Object.o obj/Release/src/Fl_Html_Parser.o obj/Release/src/Fl_Html_View.o obj/Release/src/ShowRefInfoW.o obj/Release/src/RefereeNoteW.o obj/Release/src/RefereeApplicationW.o obj/Release/src/FeeAndStakeCalcW.o obj/Release/src/ShowDecThreadW.o obj/Release/src/FindRefThreadsW.o obj/Release/src/CreoleCheatSheatW.o obj/Release/src/OperationProposalW.o obj/Release/src/ShowLiquiInfoW.o obj/Release/src/ShowKeyInfoW.o obj/Release/src/ShowTransInfoW.o obj/Release/src/ShowTransRqstsW.o obj/Release/src/NewTransRequestW.o obj/Release/src/TransRequestsW.o obj/Release/src/ShowClaimsW.o obj/Release/src/NewAccountW.o obj/Release/src/TransferLiquiW.o obj/Release/src/Logger.o obj/Release/src/KeysHandling.o obj/Release/src/LiquiditiesHandling.o obj/Release/src/InternalThread.o obj/Release/src/MessageBuilder.o obj/Release/src/RequestBuilder.o obj/Release/src/MessageProcessor.o obj/Release/src/ConnectionHandling.o obj/Release/src/DeleteLiquiW.o obj/Release/src/ExchangeOffersW.o obj/Release/src/NewExchangeOfferW.o obj/Release/src/ShowExchangeOffersW.o obj/Release/src/AcceptOfferW.o obj/Release/src/ShowLineageInfoW.o obj/Release/src/NotaryApplicationW.o obj/Release/src/ShowNotaryInfoW.o obj/Release/src/FindNotaryThreadsW.o obj/Release/src/NotaryNoteW.o obj/Release/src/AssignLiquiNameW.o ../NME-distrib/NME.o ../NME-distrib/NMEStyle.o ../EntriesHandling/libEntriesHandling.a -I../EntriesHandling/include ../cryptopp610/libcryptopp.a -I../cryptopp610 -DCURL_STATICLIB -L../curl-7.63.0/lib/.libs -lcurl -I../curl-7.63.0/include $(LINKFLTK_ALL) -o $@ -static-libgcc -static-libstdc++ -no-pie -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic
+	$(CXX) $< -Iinclude obj/Release/src/Fl_Html_Formatter.o obj/Release/src/Fl_Html_Object.o obj/Release/src/Fl_Html_Parser.o obj/Release/src/Fl_Html_View.o obj/Release/src/ShowRefInfoW.o obj/Release/src/RefereeNoteW.o obj/Release/src/RefereeApplicationW.o obj/Release/src/FeeAndStakeCalcW.o obj/Release/src/ShowDecThreadW.o obj/Release/src/FindRefThreadsW.o obj/Release/src/CreoleCheatSheatW.o obj/Release/src/OperationProposalW.o obj/Release/src/ShowLiquiInfoW.o obj/Release/src/ShowKeyInfoW.o obj/Release/src/ShowTransInfoW.o obj/Release/src/ShowTransRqstsW.o obj/Release/src/NewTransRequestW.o obj/Release/src/TransRequestsW.o obj/Release/src/ShowClaimsW.o obj/Release/src/NewAccountW.o obj/Release/src/TransferLiquiW.o obj/Release/src/Logger.o obj/Release/src/KeysHandling.o obj/Release/src/LiquiditiesHandling.o obj/Release/src/InternalThread.o obj/Release/src/MessageBuilder.o obj/Release/src/RequestBuilder.o obj/Release/src/MessageProcessor.o obj/Release/src/ConnectionHandling.o obj/Release/src/DeleteLiquiW.o obj/Release/src/ExchangeOffersW.o obj/Release/src/NewExchangeOfferW.o obj/Release/src/ShowExchangeOffersW.o obj/Release/src/AcceptOfferW.o obj/Release/src/ShowLineageInfoW.o obj/Release/src/NotaryApplicationW.o obj/Release/src/ShowNotaryInfoW.o obj/Release/src/FindNotaryThreadsW.o obj/Release/src/NotaryNoteW.o obj/Release/src/AssignLiquiNameW.o ../NME-distrib/NME.o ../NME-distrib/NMEStyle.o ../EntriesHandling/libEntriesHandling.a -I../EntriesHandling/include ../cryptopp610/libcryptopp.a -I../cryptopp610 -I../openssl-1.0.2t/include -L../openssl-1.0.2t -I../cpp-httplib $(LINKFLTK_ALL) -o $@ -static-libgcc -static-libstdc++ -no-pie -Wl,-Bstatic -lstdc++ -lpthread -lssl -lcrypto -ldl -Wl,-Bdynamic

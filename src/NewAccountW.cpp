@@ -138,10 +138,8 @@ void NewAccountW::onCreate(Fl_Widget *w, void *d)
     string notice("Store it at secure locations only and make sure that it does not get lost.\n\n");
     notice.append("Do not allow others to obtain the above file unless you want\n");
     notice.append("someone to obtain full control over the respective account.");
-    Fl::lock();
     fl_alert("IMPORTANT: The file %s \ncontaining the private key was successfully created.\n\n%s",
              namePr.c_str(), notice.c_str());
-    Fl::unlock();
     win->hide();
 }
 

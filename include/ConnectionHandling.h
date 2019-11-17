@@ -24,9 +24,8 @@
 #include <FL/fl_ask.H>
 #include <FL/Fl_Box.H>
 #include "Logger.h"
-#include <curl/curl.h>
-#include <curl/easy.h>
-#include <sstream>
+#define CPPHTTPLIB_OPENSSL_SUPPORT
+#include <httplib.h>
 
 using namespace std;
 using json = nlohmann::json;
@@ -109,7 +108,7 @@ private:
     static void *downloadRoutine(void *connectionHandling);
     volatile bool downloadRunning;
     volatile bool downloadStopped;
-    static bool downloadFile(string &url, string &output);
+    static bool downloadFile(string &url_part1, string &url_part2, string &output);
     static size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream);
     static unsigned long long systemTimeInMs();
     void logInfo(const char *msg);

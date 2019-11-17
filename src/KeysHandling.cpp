@@ -283,9 +283,10 @@ bool KeysHandling::setId(string name, CompleteID id)
     savePublicKeysIDs();
     if (newUnregSize < oldUnregSize)
     {
-        Fl::lock();
-        fl_alert("Account \"%s\" was successfully registered.\nPlease verify its details under \"Show account info\".", name.c_str());
-        Fl::unlock();
+        string *msg = new string("Account \"");
+        msg->append(name.c_str());
+        msg->append("\" was successfully registered.\nPlease verify its details under \"Show account info\".");
+        Fl::awake((void*)msg);
     }
     return true;
 }
