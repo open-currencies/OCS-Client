@@ -94,7 +94,6 @@ FindRefThreadsW::FindRefThreadsW(list<Fl_Window*> *s, InternalThread *i) : Fl_Wi
     box5->label("min. application time:");
     inp = new Fl_Input(220,160,220,25);
     inp->textsize(11);
-    inp->textfont(FL_COURIER);
     Util u;
     unsigned long long currentTime = requestBuilder->currentSyncTimeInMs();
     if (currentTime>=timeLag) currentTime-=timeLag;

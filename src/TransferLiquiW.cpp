@@ -147,7 +147,8 @@ TransferLiquiW::TransferLiquiW(InternalThread *i, string fixedLiqui, double amou
     box2->align(FL_ALIGN_RIGHT | FL_ALIGN_INSIDE);
     box2->label("Request Id:");
     inpR = new Fl_Input(190,70,220,25);
-    inpR->textsize(10);
+    inpR->textsize(11);
+    inpR->textfont(FL_COURIER);
     inpR->value(targetId.to27Char().c_str());
     inpR->readonly(1);
 

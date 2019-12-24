@@ -52,7 +52,6 @@ ShowTransRqstsW::ShowTransRqstsW(InternalThread *i) : Fl_Window(600, 420, "Show 
     box3->label("maximal request time:");
     inp = new Fl_Input(220,70,220,25);
     inp->textsize(11);
-    inp->textfont(FL_COURIER);
     Util u;
     inp->value(u.epochToStr2(requestBuilder->currentSyncTimeInMs()+1000*60*60).c_str());
 

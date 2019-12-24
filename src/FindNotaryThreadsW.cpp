@@ -66,7 +66,6 @@ FindNotaryThreadsW::FindNotaryThreadsW(list<Fl_Window*> *s, InternalThread *i) :
     box5->label("min. application time:");
     inp = new Fl_Input(220,100,220,25);
     inp->textsize(11);
-    inp->textfont(FL_COURIER);
     Util u;
     unsigned long long currentTime = requestBuilder->currentSyncTimeInMs();
     if (currentTime>=timeLag) currentTime-=timeLag;

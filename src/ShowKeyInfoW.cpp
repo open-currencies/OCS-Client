@@ -37,7 +37,7 @@ ShowKeyInfoW::ShowKeyInfoW(list<Fl_Window*> *s, InternalThread *i) : Fl_Window(5
     box->align(FL_ALIGN_RIGHT | FL_ALIGN_INSIDE);
     box->label("Key ID (optional):");
     inp = new Fl_Input(190,45,230,25);
-    inp->textsize(10);
+    inp->textsize(11);
     inp->textfont(FL_COURIER);
 
     // request button

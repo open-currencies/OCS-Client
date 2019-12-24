@@ -46,7 +46,6 @@ AcceptOfferW::AcceptOfferW(InternalThread *i, string lR, double aR, string lO, d
     box3->align(FL_ALIGN_RIGHT | FL_ALIGN_INSIDE);
     box3->label("Amount to transfer:");
     inpR = new Fl_Input(260,70,220,25);
-    inpR->textsize(10);
     inpR->value(u.toString(amountR, 2).c_str());
     inpR->readonly(1);
 
@@ -81,7 +80,6 @@ AcceptOfferW::AcceptOfferW(InternalThread *i, string lR, double aR, string lO, d
     box4->align(FL_ALIGN_RIGHT | FL_ALIGN_INSIDE);
     box4->label("Amount to receive:");
     inpO = new Fl_Input(260,130,220,25);
-    inpO->textsize(10);
     inpO->value(u.toString(amountOdiscounted, 2).c_str());
     inpO->readonly(1);
 

@@ -44,9 +44,8 @@ RefereeApplicationW::RefereeApplicationW(list<Fl_Window*> *s, InternalThread *i,
     box1->labelfont(FL_COURIER);
     box1->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
     box1->label("Scheduled begin of tenure (YYYY-MM-DD e.g. 2011-08-23):");
-    inp1 = new Fl_Input(470,40,150,25);
-    inp1->textsize(10);
-    inp1->textfont(FL_COURIER);
+    inp1 = new Fl_Input(467,40,153,25);
+    inp1->textsize(11);
     dum1 = new Fl_Box(625,40,5,25);
     dum1->hide();
     group1->resizable(dum1);

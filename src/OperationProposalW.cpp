@@ -45,16 +45,12 @@ OperationProposalW::OperationProposalW(list<Fl_Window*> *s, InternalThread *i, s
     box1->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
     box1->label("Requested amount:");
     inp1 = new Fl_Input(170,40,130,25);
-    inp1->textsize(10);
-    inp1->textfont(FL_COURIER);
     // Forfeit
     box3 = new Fl_Box(310,40,100,25);
     box3->labelfont(FL_COURIER);
     box3->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
     box3->label("Forfeit (optional):");
     inp3 = new Fl_Input(510,40,110,25);
-    inp3->textsize(10);
-    inp3->textfont(FL_COURIER);
     dum1 = new Fl_Box(625,40,5,25);
     dum1->hide();
     group1->resizable(dum1);
@@ -67,16 +63,12 @@ OperationProposalW::OperationProposalW(list<Fl_Window*> *s, InternalThread *i, s
     box2->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
     box2->label("Processing fee:");
     inp2 = new Fl_Input(170,70,130,25);
-    inp2->textsize(10);
-    inp2->textfont(FL_COURIER);
     // processing time
     box4 = new Fl_Box(310,70,100,25);
     box4->labelfont(FL_COURIER);
     box4->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
     box4->label("Processing time (days):");
     inp4 = new Fl_Input(510,70,110,25);
-    inp4->textsize(10);
-    inp4->textfont(FL_COURIER);
     dum2 = new Fl_Box(625,70,5,25);
     dum2->hide();
     group2->resizable(dum2);

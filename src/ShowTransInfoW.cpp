@@ -21,7 +21,7 @@ ShowTransInfoW::ShowTransInfoW(list<Fl_Window*> *s, InternalThread *i) : Fl_Wind
     box->align(FL_ALIGN_RIGHT | FL_ALIGN_INSIDE);
     box->label("Transaction ID:");
     inp = new Fl_Input(170,15,220,25);
-    inp->textsize(10);
+    inp->textsize(11);
     inp->textfont(FL_COURIER);
 
     // request button

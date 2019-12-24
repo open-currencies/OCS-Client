@@ -20,8 +20,6 @@ ShowNotaryInfoW::ShowNotaryInfoW(list<Fl_Window*> *s, InternalThread *i) : Fl_Wi
     box->align(FL_ALIGN_RIGHT | FL_ALIGN_INSIDE);
     box->label("Notary nr. (e.g. 1,1):");
     inp = new Fl_Input(203,15,220,25);
-    inp->textsize(10);
-    inp->textfont(FL_COURIER);
 
     // choose account
     box1 = new Fl_Box(23,45,176,25);

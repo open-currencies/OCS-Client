@@ -53,7 +53,7 @@ ShowRefInfoW::ShowRefInfoW(list<Fl_Window*> *s, InternalThread *i) : Fl_Window(5
     box->align(FL_ALIGN_RIGHT | FL_ALIGN_INSIDE);
     box->label("Key ID (optional):");
     inp = new Fl_Input(200,75,220,25);
-    inp->textsize(10);
+    inp->textsize(11);
     inp->textfont(FL_COURIER);
 
     // request button

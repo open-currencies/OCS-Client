@@ -52,7 +52,7 @@ ShowLiquiInfoW::ShowLiquiInfoW(list<Fl_Window*> *s, InternalThread *i, bool f) :
     box->align(FL_ALIGN_RIGHT | FL_ALIGN_INSIDE);
     box->label("ID (optional):");
     inp = new Fl_Input(190,45,230,25);
-    inp->textsize(10);
+    inp->textsize(11);
     inp->textfont(FL_COURIER);
 
     // request button
